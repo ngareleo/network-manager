@@ -29,26 +29,44 @@ class Body:
 class Table:
     """Custom table just because I can ^-^"""
 
+    # TODO: Reduce memory size of this table, alot of redundant attrs
+    # TODO: Allow table updates by changing the body attr
+
     def __init__(self, header: Header, body: Body) -> None:
         self.header = header
         self.body = body
 
     def _draw_horizontal_border(self):
-        return (
-            "+".join(
-                ["{:-<{size}}".format("", size=cell.size) for cell in self.header.row]
-            )
-            + "\n"
-        )
+        sized_horizontal_lines = [
+            "{:-<{size}}+".format("", size=cell.size) for cell in self.header.row
+        ]
+        return "".join(["+"] + sized_horizontal_lines + ["\n"])
 
     def _draw_header_content(self):
-        return "|".join([f" {cell.content} |" for cell in self.header.row]) + "\n"
+        sizes = []  # we get sizes from column schemas
+        return "".join(
+            ["|"]
+            + [
+                "{:{fill}<{size}}|".format(cell.content, fill=" ", size=cell.size)
+                for cell in self.header.row
+            ]
+            + ["\n"]
+            + ["+"]  # start of the bottom border that uses = instead of -
+            + ["{:=<{size}}+".format("", size=cell.size) for cell in self.header.row]
+            + ["\n"]
+        )
 
     def _draw_body(self):
         return "".join(
             [
-                "|".join(
-                    [f" {cell.content} |" for cell in row]
+                "".join(
+                    ["|"]
+                    + [
+                        "{:{fill}<{size}}|".format(
+                            cell.content, fill=" ", size=cell.size
+                        )
+                        for cell in row
+                    ]
                     + ["\n", self._draw_horizontal_border()]
                 )
                 for row in self.body.rows
@@ -61,7 +79,6 @@ class Table:
                 [
                     self._draw_horizontal_border(),
                     self._draw_header_content(),
-                    self._draw_horizontal_border(),
                     self._draw_body(),
                 ]
             )
@@ -79,6 +96,11 @@ class Table:
         [head, *rest] = list(np.transpose(cells))
         table = Table(header=Header(row=head), body=Body(rows=rest))
         table.draw_table()
+
+    @classmethod
+    def add_row(cls, content: List[List[str]]):
+        """This method expects"""
+        pass
 
 
 if __name__ == "__main__":
