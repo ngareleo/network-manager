@@ -40,7 +40,7 @@ class Table:
         sized_horizontal_lines = [
             "{:-<{size}}+".format("", size=cell.size) for cell in self.header.row
         ]
-        return "".join(["+"] + sized_horizontal_lines + ["\n"])
+        return "".join(["+"] + sized_horizontal_lines)
 
     def _draw_header_content(self):
         sizes = []  # we get sizes from column schemas
@@ -53,35 +53,27 @@ class Table:
             + ["\n"]
             + ["+"]  # start of the bottom border that uses = instead of -
             + ["{:=<{size}}+".format("", size=cell.size) for cell in self.header.row]
-            + ["\n"]
         )
 
     def _draw_body(self):
-        return "".join(
-            [
-                "".join(
-                    ["|"]
-                    + [
-                        "{:{fill}<{size}}|".format(
-                            cell.content, fill=" ", size=cell.size
-                        )
-                        for cell in row
-                    ]
-                    + ["\n", self._draw_horizontal_border()]
-                )
-                for row in self.body.rows
-            ]
-        )
+        return [
+            "".join(
+                ["|"]
+                + [
+                    "{:{fill}<{size}}|".format(cell.content, fill=" ", size=cell.size)
+                    for cell in row
+                ]
+                + ["\n", self._draw_horizontal_border()]
+            )
+            for row in self.body.rows
+        ]
 
     def draw_table(self):
         print(
-            "".join(
-                [
-                    self._draw_horizontal_border(),
-                    self._draw_header_content(),
-                    self._draw_body(),
-                ]
-            )
+            self._draw_horizontal_border(),
+            self._draw_header_content(),
+            *self._draw_body(),
+            sep="\n",
         )
 
     @classmethod
