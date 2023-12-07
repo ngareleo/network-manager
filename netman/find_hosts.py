@@ -22,10 +22,3 @@ def ping_host(host: str) -> dict[str, str]:
     ).stdout
 
     return crunch_ping_response(out)
-
-
-if __name__ == "__main__":
-    for i in range(1, 11):
-        ping = ping_host(f"192.168.100.{i}")
-        res = crunch_ping_response(ping)
-
